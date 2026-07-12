@@ -73,7 +73,6 @@ pip install -r requirements.txt
 import numpy as np
 from ai_lab.neural_network import MLPClassifier
 from ai_lab.preprocessing import StandardScaler
-from ai_lab.metrics import accuracy_score
 
 # 1. 샘플 데이터
 X = np.array([[0.1, 0.5], [1.2, 0.8], [0.5, 0.2], [1.5, 1.1]])
