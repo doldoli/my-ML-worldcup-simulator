@@ -61,23 +61,31 @@ AI_LAB
 
 #### Installation
 
+##### 1. git clone 및 폴더 이동
+
 ```bash
 git clone https://github.com/doldoli/my-ML-worldcup-simulator
 cd my-ML-worldcup-simulator
+```
+##### 2. 가상환경 설정 및 패키지 설치
 
-# venv(가상환경) 설정
-# 윈도우(Windows) 사용자
+- Windows 사용자:
+  
+```bash
 python -m venv venv
 venv\Scripts\activate
-
-# 맥(Mac) 사용자
-python3 -m venv venv
-source venv/bin/activate
-
 pip install -r requirements.txt
 ```
 
-#### ML Library Usage Example
+- Mac/Linux 사용자:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+##### ML Library Usage Example
 
 ```python
 import numpy as np
