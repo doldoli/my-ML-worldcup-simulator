@@ -64,6 +64,16 @@ AI_LAB
 ```bash
 git clone https://github.com/doldoli/my-ML-worldcup-simulator
 cd my-ML-worldcup-simulator
+
+# venv(가상환경) 설정
+# 윈도우(Windows) 사용자
+python -m venv venv
+venv\Scripts\activate
+
+# 맥(Mac) 사용자
+python3 -m venv venv
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
