@@ -9,7 +9,7 @@ class StandardScaler:
     """
     def __init__(self):
         """
-        StandaradScaler의 파라미터를 초기화.
+        StandardScaler의 파라미터를 초기화.
         """
 
         # train data로 fit() 되지 않은 상태에서 표준화하는 것을 방지하기 위해 평균, 표준편차 변수를 미리 선언 후 None으로 초기화
@@ -31,18 +31,18 @@ class StandardScaler:
         # 입력 데이터 X 검증 및 변환
         X = check_array(X)
         
-        # axis=0으로 지정해 행(데이터)들을 압축해서 열(특성)별로 계산하게끔 함. -> 각 열(특성)별로 평균, 표준편차가 계산되고 이를 멤버 데이터로 저장
+        # Feature 별 평균 및 표준편차 계산 (n_features,)
         self.mean_ = np.mean(X, axis=0)
         self.scale_ = np.std(X, axis=0)
 
-        # 만약 모든 데이터가 같은 값이어서 표준편차가 0이 나올때 ZeroDivision 에러 발생하기에 방지 로직
+        # ZeroDivisionError 방지: 분산이 0인 특성의 표준편차를 1.0으로 보정
         self.scale_[self.scale_ == 0.0] = 1.0
 
         return self
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """
-        fit()에서 저장해둔 평균과 표준편차를 이용해 test 데이터를 표준화 함.
+        fit()에서 저장해둔 평균과 표준편차를 이용해 입력 데이터(X)를 표준화
         
         Args:
             X (np.ndarray): (n_samples, n_features) 변환할 입력 데이터
@@ -50,7 +50,7 @@ class StandardScaler:
         Returns:
             np.ndarray: (n_samples, n_features) 표준화가 완료된 새로운 데이터 배열
         """
-        # fit()이 호출되지 않아 평균이나 정규분포가 구해지지 않은 경우 에러 발생
+        # 학습되지 않은 객체(mean_, scale_ 부재)에 대한 예외 처리
         if self.mean_ is None or self.scale_ is None:
             raise NotFittedError("해당 StandardScaler 객체가 아직 fit()이 호출되지 않았습니다.")
         
