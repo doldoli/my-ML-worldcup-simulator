@@ -31,7 +31,6 @@ def cross_entropy_loss(y_true: np.ndarray, y_pred_proba: np.ndarray) -> float:
     eps = 1e-15
     # 확률값이 0이나 1이 되지 않도록 0.00...1 ~ 0.99...9 사이로 잘라줌
     y_pred_proba = np.clip(y_pred_proba, eps, 1 - eps)
-    # y_pred_proba가 eps보다 작으면 eps로, 1 - eps 보다 크면 1 - eps로 값 설정
     
     # 1D 배열인 경우 (binary CE)
     # (n,1) 형태의 2차원 배열이 들어오든 (n,) 형태의 1차원 배열이 들어오든 모두 1차원으로 맞춰서 계산
