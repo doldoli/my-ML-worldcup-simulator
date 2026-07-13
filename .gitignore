@@ -1,25 +1,25 @@
-# 1. Python 가상환경 (절대 Git에 올리면 안 됨 - 용량이 크고 환경마다 다름)
+# Python Virtual Environments
 venv/
 env/
+.env
 
-# 2. Python 캐시 및 컴파일된 파일 (실행 시 자동 생성되므로 불필요)
+# Python Cache & Compiled Files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# 3. Jupyter Notebook 관련 (자동 저장 임시 파일)
+# Jupyter Notebook
 .ipynb_checkpoints/
 
-# 4. OS 관련 숨김 파일 (Mac에서 자동 생성되는 파일)
+# OS Generated Files
 .DS_Store
 Thumbs.db
 
-# 5. IDE(에디터) 설정 파일 (VS Code 등을 사용할 경우)
+# IDE & Editor Settings
 .vscode/
 .idea/
 
-# 6. Python 패키징 빌드 관련 (추후 라이브러리 빌드 시 생성됨)
+# Build / Distribution
 build/
 dist/
 *.egg-info/
-
