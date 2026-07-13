@@ -66,7 +66,7 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
             np.ndarray (n_samples, n_classes) 형태의 각 클래스별 확률값 행렬
         """
         z = np.clip(z, -250, 250)
-        # np.exp 계산시 오버플로우를 방지하기 위해, 각 행(데이터) 별로 최댓값을 빼주고 계산함. (수학적으로 결과 동일)
+        # np.exp 계산시 오버플로우를 방지하기 위해, 각 행(데이터) 별로 최댓값을 빼주고 계산
         exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
         return exp_z / np.sum(exp_z, axis=1, keepdims=True)
     
@@ -107,13 +107,11 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
         """
 
         n_samples, n_features = X.shape
-        # 가중치 배열을 (n_features,) 형태로 초기화. 
-        # forward 진행시 X dot W 연산을 통해 feature별로 가중치를 곱해 더하기 위함
+        # 가중치 배열을 (n_features,) 형태로 초기화.
         self.weights_ = np.zeros(n_features) 
         self.bias_ = 0.0 # bias 초기화
 
         # 문자열 등의 데이터를 수학 연산이 가능하도록 0과 1로 변환
-        # self.classes_[1]을 1로 매핑하여 predict 매서드와 일관성 유지 (self.classes_[0]은 0)
         y_binary = np.where(y == self.classes_[1], 1, 0)
 
         batch_size = self.batch_size if self.batch_size is not None else n_samples
@@ -124,7 +122,6 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
 
         # binary 분류 GD 알고리즘 루프
         for epoch in range(self.epochs):
-            # permutation(n_samples)는 0부터 n_samples-1 까지의 숫자를 무작위로 섞은 1차원 배열을 생성해줌. 이 때 random_state의 시드값에 따라 생성
             # 데이터 순서 학습에 따른 편향을 막기 위해 매 epoch 마다 인덱스를 새로 섞음
             indices = rng.permutation(n_samples)
 
@@ -137,9 +134,8 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
                 y_batch = y_shuffled[i:i + batch_size] # (m, )
                 m = X_batch.shape[0] # 행의 개수 (현재 배치에서의 데이터 샘플 수)
 
-                # Forward 가중합 -> (m,)
-                # X_batch (m, n_features) dot W (n_features, ) = (m, )
-                # self.bias_는 단일 숫자(float)지만 NumPy 브로드캐스팅에 의해 모든 행에 자동으로 더해짐.
+                # Forward 가중합
+                # Z = XW + b ((m, n_features) dot (n_features,) -> (m,))
                 linear_output = X_batch.dot(self.weights_) + self.bias_
                 
                 # 예측값 (m, )
@@ -185,12 +181,9 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
         # bias 배열: (n_classes, ) - 각 클래스마다 1개씩 존재
         self.bias_ = np.zeros(n_classes)
 
-        # 1차원 y를 one-hot encoding (n_samples, n_classes) 으로 변환 (예: 1 -> [0, 1, 0])
+        # Target 데이터를 one-hot Encoding 행렬 (n_samples, n_classes)로 변환
         y_one_hot = np.zeros((n_samples, n_classes))
-        for idx, c in enumerate(self.classes_): # enumerate는 배열의 인덱스 번호와 실제 값을 동시에 뽑아냄
-            # Boolean Indexing
-            # y == c 조건이 맞는 위치만 True인 Mask 배열을 만듦
-            # 행 자리에 이 조건을 넣으면, 정답이 c인 행들만 뽑아서 그 행의 idx 열에 1을 채워넣어 one-hot-encoding 변환을 함
+        for idx, c in enumerate(self.classes_):
             y_one_hot[y == c, idx] = 1
         
         batch_size = self.batch_size if self.batch_size is not None else n_samples
@@ -206,9 +199,8 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
                 y_batch = y_shuffled[i:i + batch_size] # (m, n_classes)
                 m = X_batch.shape[0] # 행의 개수 (현재 배치에서의 데이터 샘플 수)
 
-                # Forward 가중합 -> (m, n_classes)
-                # X_batch(m, n_features) dot W(n_features, n_classes) = (m, n_classes)
-                # self.bias_(n_classes,) 1차원 배열은 NumPy 브로드캐스팅에 의해 각 열(클래스)마다 더해짐
+                # Forward 가중합
+                # Z = XW + b ((m, n_features) dot (n_features, n_classes) -> (m,n_classes))
                 linear_output = X_batch.dot(self.weights_) + self.bias_
 
                 # 예측값 (m, n_classes)
@@ -219,8 +211,8 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
                 error = y_pred_probs - y_batch
 
                 # Backward (Gradient 계산)
-                dw = (1 / m) * X_batch.T.dot(error) # (n_features, m) dot (m, n_classes) = (n_features, n_classes)
-                db = (1 / m) * np.sum(error, axis=0) # 열 방향으로 다 더해서 (n_classes,) 1차원 배열 생성
+                dw = (1 / m) * X_batch.T.dot(error) # (n_features, m) dot (m, n_classes) -> (n_features, n_classes)
+                db = (1 / m) * np.sum(error, axis=0) # (n_classes,)
 
                 # Regularization
                 if self.penalty == 'l2':
@@ -242,7 +234,7 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
         Returns:
             np.ndarray: (n_samples,) or (n_samples, n_classes) 예측된 확률값 배열
         """
-        # fit() 함수를 실행하지 않고 실행했을 때 에러처리. fit() 실행하지 않으면 self.weights_ 존재 X
+        # 학습되지 않은 모델(self.weights_ 부재)에 대한 예외 처리
         if not hasattr(self, 'weights_'):
             raise NotFittedError("모델이 아직 학습되지 않았습니다")
         
@@ -279,6 +271,5 @@ class LogisticRegression(BaseEstimator, ClassifierMixin):
             # 확률 행렬에서 행(axis=1)마다 가장 값이 큰 열의 인덱스 번호 추출
             indices = np.argmax(proba, axis=1)
 
-        # 내부 인덱스를 실제 클래스 이름으로 매핑해서 반환
-        # Fancy Indexing
+        # 내부 인덱스를 실제 클래스 이름으로 변환하여 반환
         return self.classes_[indices]
